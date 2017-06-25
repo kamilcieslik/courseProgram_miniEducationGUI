@@ -17,19 +17,19 @@ public class Student implements Comparable<Student>, Serializable {
     private List<Course> ListaKursowStudenta = new ArrayList<Course>();
 
     Student() {
-        _setImie(CzytajDane.getNameJFC("Podaj imie: "));
-        _setNazwisko(CzytajDane.getNameJFC("Podaj nazwisko: "));
-        _setNr_Indeksu(CzytajDane.getNumer_IndeksuJFC("Podaj numer indeksu: "));
-        Rok_Rozpoczecia_Studiow = CzytajDane.getRok_RozpoczeciaJFC("Podaj rok w ktorym zaczales studiowac. Jezeli " +
+        _setImie(ReadData.getNameJFC("Podaj imie: "));
+        _setNazwisko(ReadData.getNameJFC("Podaj nazwisko: "));
+        _setNr_Indeksu(ReadData.getNumer_IndeksuJFC("Podaj numer indeksu: "));
+        Rok_Rozpoczecia_Studiow = ReadData.getRok_RozpoczeciaJFC("Podaj rok w ktorym zaczales studiowac. Jezeli " +
                 "nasza uczelnia jest Twoja pierwsza, podaj biezacy rok.");
         ObliczStaz();
     }
 
     Student(int indeks) {
         Nr_Indeksu = indeks;
-        _setImie(CzytajDane.getNameJFC("Podaj imie: "));
-        _setNazwisko(CzytajDane.getNameJFC("Podaj nazwisko: "));
-        Rok_Rozpoczecia_Studiow = CzytajDane.getRok_RozpoczeciaJFC("Podaj rok w ktorym zaczales studiowac. Jezeli " +
+        _setImie(ReadData.getNameJFC("Podaj imie: "));
+        _setNazwisko(ReadData.getNameJFC("Podaj nazwisko: "));
+        Rok_Rozpoczecia_Studiow = ReadData.getRok_RozpoczeciaJFC("Podaj rok w ktorym zaczales studiowac. Jezeli " +
 				"nasza uczelnia jest Twoja pierwsza, podaj biezacy rok.");
         ObliczStaz();
     }
@@ -84,10 +84,10 @@ public class Student implements Comparable<Student>, Serializable {
     }
 
     public void wprowadzDane() {
-        _setImie(CzytajDane.getNameJFC("Podaj imie: "));
-        _setNazwisko(CzytajDane.getNameJFC("Podaj nazwisko: "));
-        _setNr_Indeksu(CzytajDane.getNumer_IndeksuJFC("Podaj numer indeksu: "));
-        Rok_Rozpoczecia_Studiow = CzytajDane.getRok_RozpoczeciaJFC("Podaj rok w ktorym zaczales studiowac. Jezeli " +
+        _setImie(ReadData.getNameJFC("Podaj imie: "));
+        _setNazwisko(ReadData.getNameJFC("Podaj nazwisko: "));
+        _setNr_Indeksu(ReadData.getNumer_IndeksuJFC("Podaj numer indeksu: "));
+        Rok_Rozpoczecia_Studiow = ReadData.getRok_RozpoczeciaJFC("Podaj rok w ktorym zaczales studiowac. Jezeli " +
 				"nasza uczelnia jest Twoja pierwsza, podaj biezacy rok.");
         ObliczStaz();
     }

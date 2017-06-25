@@ -44,7 +44,7 @@ public class Records {
         do {
             blad = false;
             try {
-                indeks = CzytajDane.getNumer_IndeksuJFC("Podaj numer indeksu");
+                indeks = ReadData.getNumer_IndeksuJFC("Podaj numer indeksu");
                 if (Znajdz_Studenta_Po_Indeksie(indeks) == false) {
                     Student nowystudent = new Student(indeks);
                     ListaStudentow.add(nowystudent);
@@ -122,7 +122,7 @@ public class Records {
         }
         if (blad == false) {
             tmp += "\n\nKt�rego studenta usunac? ";
-            int n = CzytajDane.getIntJFC(tmp);
+            int n = ReadData.getIntJFC(tmp);
             if (n < 1 || n > ListaStudentow.size()) {
                 JOptionPane.showMessageDialog(null, "Brak studenta o numerze " + n);
                 return;
@@ -205,7 +205,7 @@ public class Records {
         do {
             blad = false;
             try {
-                nazwa = CzytajDane.getNameJFC("Podaj nazwe kursu: ");
+                nazwa = ReadData.getNameJFC("Podaj nazwe kursu: ");
                 if (Znajdz_Kurs_Po_Nazwie(nazwa) == false) {
                     Course nowykurs = new Course(nazwa);
                     ListaKursow.add(nowykurs);
@@ -236,7 +236,7 @@ public class Records {
         }
         if (blad == false) {
             tmp += "\n\nKtórego kurs usunac? ";
-            int n = CzytajDane.getIntJFC(tmp);
+            int n = ReadData.getIntJFC(tmp);
             if (n < 1 || n > ListaKursow.size()) {
                 JOptionPane.showMessageDialog(null, "Brak kursu o numerze " + n);
                 return;
@@ -304,7 +304,7 @@ public class Records {
         }
         if (blad == false) {
             tmp += "\n\nKtórego studenta przyporzadkowac? ";
-            int n = CzytajDane.getIntJFC(tmp);
+            int n = ReadData.getIntJFC(tmp);
             if (n < 1 || n > ListaStudentow.size()) {
                 JOptionPane.showMessageDialog(null, "Brak studenta o numerze " + n);
                 return;
@@ -327,7 +327,7 @@ public class Records {
             }
             if (blad == false) {
                 tmp2 += "\n\nKtory kurs wybierasz? ";
-                int n2 = CzytajDane.getIntJFC(tmp2);
+                int n2 = ReadData.getIntJFC(tmp2);
                 if (n2 < 1 || n2 > ListaKursow.size()) {
                     JOptionPane.showMessageDialog(null, "Brak kursu o numerze " + n2);
                     return;
@@ -482,7 +482,7 @@ public class Records {
                         "12 - Wyswietl Kursy ze Studentami\n" +
                         "13 - Wyswietl Studentow z Kursami\n" +
                         "0 - Zakoncz program";
-                switch (CzytajDane.getIntJFC(menu)) {
+                switch (ReadData.getIntJFC(menu)) {
                     case 1:
                         nowyzapis.WczytajMiniEdukacje();
                         break;

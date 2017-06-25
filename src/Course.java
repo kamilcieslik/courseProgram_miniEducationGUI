@@ -15,13 +15,13 @@ public class Course implements Comparable<Course>, Serializable{
 
 
     Course(){
-        _setNazwa(CzytajDane.getNameJFC("Podaj nazwe kursu: "));
-        _setECTS(CzytajDane.getIntEctsJFC("Jaka wage punktow ECTS ma miec ten kurs? (1-10)"));
+        _setNazwa(ReadData.getNameJFC("Podaj nazwe kursu: "));
+        _setECTS(ReadData.getIntEctsJFC("Jaka wage punktow ECTS ma miec ten kurs? (1-10)"));
     }
 
     Course(String nazwa){
         Nazwa=nazwa;
-        _setECTS(CzytajDane.getIntEctsJFC("Jaka wage punktow ECTS ma miec ten kurs? (1-10)"));
+        _setECTS(ReadData.getIntEctsJFC("Jaka wage punktow ECTS ma miec ten kurs? (1-10)"));
     }
     Course(String name, int _ECTS){
         Nazwa=name;
@@ -45,8 +45,8 @@ public class Course implements Comparable<Course>, Serializable{
     }
 
     public void wprowadzDane(){
-        _setNazwa(CzytajDane.getNameJFC("Podaj nazwe kursu: "));
-        _setECTS(CzytajDane.getIntEctsJFC("Jaka wage punktow ECTS ma miec ten kurs? (1-10)"));
+        _setNazwa(ReadData.getNameJFC("Podaj nazwe kursu: "));
+        _setECTS(ReadData.getIntEctsJFC("Jaka wage punktow ECTS ma miec ten kurs? (1-10)"));
     }
 
     public String toString(){
