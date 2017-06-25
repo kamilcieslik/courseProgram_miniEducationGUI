@@ -1,0 +1,474 @@
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import java.awt.Font;
+import java.awt.Color;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class MainFrame extends JFrame {
+
+    private static final long serialVersionUID = -434071091709274293L;
+    private JPanel JPanelMainFrame;
+    JLabel JLabelTitle;
+    JList<Student> JListStudents;
+    JList<Course> JListCourses;
+    JButton JButtonAddStudent;
+    JButton JButtonAddCourse;
+    JButton JButtonDeleteStudent;
+    JButton JButtonDeleteCourse;
+    JLabel JLabelStudents;
+    JLabel JLabelCourses;
+    JButton JButtonLoad;
+    JButton JButtonSave;
+    JButton JButtonAssignment;
+    JRadioButton JRadioButtonNormalSorting;
+    JRadioButton JRadioButtonAlternativeSorting;
+    ButtonGroup ButtonGroupOfSorts;
+    JButton JButtonClose;
+
+    public MainFrame(Records nowyzapis) {
+
+        setTitle("MiniEdukacja");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setBounds(100, 100, 1790, 560);
+        setLocationRelativeTo(null);
+        JPanelMainFrame = new JPanel();
+        JPanelMainFrame.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(JPanelMainFrame);
+        JPanelMainFrame.setLayout(null);
+        setResizable(false);
+
+        /**
+         * Etykieta z nazwą projektu - aplikacji.
+         */
+        JLabel JLabelTitle = new JLabel("Mini Edukacja");
+        JLabelTitle.setForeground(new Color(139, 69, 19));
+        JLabelTitle.setFont(new Font("Yu Gothic", Font.PLAIN, 50));
+        JLabelTitle.setBounds(706, 0, 367, 93);
+        JLabelTitle.setHorizontalAlignment(SwingConstants.CENTER);
+        JPanelMainFrame.add(JLabelTitle);
+
+        /**
+         * Etykieta nad komponentem tekstowym JTextPaneStudentDetails wyświetlającym szczegółowe informacje o
+         * zaznaczonym w JListStudents studencie.
+         */
+        JLabel JLabelStudent = new JLabel("Nie wybrano");
+        JLabelStudent.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabelStudent.setForeground(Color.BLACK);
+        JLabelStudent.setFont(new Font("Yu Gothic", Font.PLAIN, 20));
+        JLabelStudent.setBounds(113, 84, 173, 33);
+        JPanelMainFrame.add(JLabelStudent);
+
+        /**
+         * Etykieta nad komponentem tekstowym JTextPaneCourseDetails wyświetlającym szczegółowe informacje o
+         * zaznaczonym w JListCourses kursie.
+         */
+        JLabel JLabelCourse = new JLabel("Nie wybrano");
+        JLabelCourse.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabelCourse.setForeground(Color.BLACK);
+        JLabelCourse.setFont(new Font("Yu Gothic", Font.PLAIN, 20));
+        JLabelCourse.setBounds(1492, 84, 173, 33);
+        JPanelMainFrame.add(JLabelCourse);
+
+        /**
+         * Komponent tekstowy wyświetlający szczegółowe informacje o zaznaczonym w JListStudents studencie.
+         * Dla zawartego w nim tekstu zostały ustawione atrybuty wyświetlające go na środku.
+         */
+        JTextPane JTextPaneStudentDetails = new JTextPane();
+        JTextPaneStudentDetails.setBackground(UIManager.getColor("Button.background"));
+        JTextPaneStudentDetails.setBounds(10, 117, 387, 276);
+        JTextPaneStudentDetails.setText("Aby wyswietlic szczegolowe informacje o studencie\nw pierwszej kolejnosci " +
+                "musisz jakiegos wybrac.");
+        SimpleAttributeSet attributesForText = new SimpleAttributeSet();
+        StyleConstants.setAlignment(attributesForText, StyleConstants.ALIGN_CENTER);
+        StyledDocument doc = JTextPaneStudentDetails.getStyledDocument();
+        doc.setParagraphAttributes(0, 104, attributesForText, false);
+        JPanelMainFrame.add(JTextPaneStudentDetails);
+
+        /**
+         * Komponent tekstowy wyświetlający szczegółowe informacje o zaznaczonym w JListCourses kursie.
+         * Dla zawartego w nim tekstu zostały ustawione atrybuty wyświetlające go na środku.
+         */
+        JTextPane JTextPaneCourseDetails = new JTextPane();
+        JTextPaneCourseDetails.setBackground(UIManager.getColor("Button.background"));
+        JTextPaneCourseDetails.setBounds(1376, 117, 387, 276);
+        JTextPaneCourseDetails.setText("Aby wyswietlic szczegolowe informacje o kursie\nw pierwszej kolejnosci musisz" +
+                " jakies wybrac.");
+        doc = JTextPaneCourseDetails.getStyledDocument();
+        doc.setParagraphAttributes(0, 104, attributesForText, false);
+        JPanelMainFrame.add(JTextPaneCourseDetails);
+
+        /**
+         * JList ze studentami.
+         * Po zaznaczeniu pozycji studenta, wyświetlają się o nim szczegółowe informacjie w JTextPaneStudentDetails.
+         */
+        JList<Student> JListStudents = new JList<Student>();
+        JListStudents.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JListStudents.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent event) {
+                try {
+                    JTextPaneStudentDetails.setText(nowyzapis.getListaStudentow().get(JListStudents.getSelectedIndex
+                            ()).WyswietlListeKursowStudenta());
+                    JLabelStudent.setText(nowyzapis.getListaStudentow().get(JListStudents.getSelectedIndex()).getImie
+                            () + " " + nowyzapis.getListaStudentow().get(JListStudents.getSelectedIndex()).getNazwisko
+                            ());
+                } catch (Exception e) {
+                    JTextPaneStudentDetails.setText("Aby wyswietlic szczegolowe informacje o studencie\nw pierwszej " +
+                            "kolejnosci musisz jakiegos wybrac.");
+                    JLabelStudent.setText("Nie wybrano");
+                }
+            }
+        });
+
+        /**
+         * Przejęcie JListStudents przez panel przewijany z suwakami.
+         * W sytuacji przepełnienia komponentu ze studentami pojawi się możliwość przewijania.
+         */
+        JScrollPane scrollPaneStudents = new JScrollPane(JListStudents, ScrollPaneConstants
+                .VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPaneStudents.setBounds(406, 117, 387, 276);
+        scrollPaneStudents.setViewportView(JListStudents);
+        JPanelMainFrame.add(scrollPaneStudents);
+
+        /**
+         * JList z kursami.
+         * Po zaznaczeniu pozycji kursu, wyświetlają się o nim szczegółowe informacjie w JTextPaneCourseDetails.
+         */
+        JList<Course> JListCourses = new JList<Course>();
+        JListCourses.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JListCourses.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent event) {
+                try {
+                    JTextPaneCourseDetails.setText(nowyzapis.getListaKursow().get(JListCourses.getSelectedIndex())
+                            .WyswietlListeStudentowKursu());
+                    JLabelCourse.setText(nowyzapis.getListaKursow().get(JListCourses.getSelectedIndex()).getNazwa());
+                } catch (Exception e) {
+                    JTextPaneCourseDetails.setText("Aby wyswietlic szczegolowe informacje o kursie\nw pierwszej " +
+                            "kolejnosci musisz jakis wybrac.");
+                    JLabelCourse.setText("Nie wybrano");
+                }
+            }
+        });
+
+        /**
+         * Przejęcie JListCourses przez panel przewijany z suwakami.
+         * W sytuacji przepełnienia komponentu z kursami pojawi się możliwość przewijania.
+         */
+        JScrollPane scrollPaneCourses = new JScrollPane(JListCourses, ScrollPaneConstants
+                .VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPaneCourses.setBounds(980, 117, 387, 276);
+        scrollPaneCourses.setViewportView(JListCourses);
+        JPanelMainFrame.add(scrollPaneCourses);
+
+        /**
+         * Przycisk, który po kliknięciu wyświetla nowy Frame z kreatorem dodania nowego studenta.
+         * MainFrame przekazany aby móc go odmrozić po zamknięciu addStudentFrame.
+         * JListStudents przekazana aby ją odświeżyć po zamknięciu addStudentFrame.
+         */
+        JButton JButtonAddStudent = new JButton("Dodaj Studenta");
+        JButtonAddStudent.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                MainFrame.this.setEnabled(false);
+                AddStudentFrame addStudentFrame = new AddStudentFrame(MainFrame.this, JListStudents, nowyzapis);
+                addStudentFrame.setVisible(true);
+            }
+        });
+        JButtonAddStudent.setBounds(406, 422, 130, 33);
+        JPanelMainFrame.add(JButtonAddStudent);
+
+        /**
+         * Przycisk, który po kliknięciu wyświetla nowy Frame z kreatorem dodania nowego kursu.
+         * MainFrame przekazany aby móc go odmrozić po zamknięciu addCourseFrame.
+         * JListCourses przekazana aby ją odświeżyć po zamknięciu addStudentFrame.
+         */
+        JButton JButtonAddCourse = new JButton("Dodaj Course");
+        JButtonAddCourse.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                MainFrame.this.setEnabled(false);
+                AddCourseFrame addCourseFrame = new AddCourseFrame(MainFrame.this, JListCourses, nowyzapis);
+                addCourseFrame.setVisible(true);
+            }
+        });
+        JButtonAddCourse.setBounds(980, 422, 130, 33);
+        JPanelMainFrame.add(JButtonAddCourse);
+
+        /**
+         * Przycisk, który po kliknięciu usuwa, zaznaczonego w JListStudents, studenta.
+         * Po wywołaniu metody usuwającej następuje odświeżenie JListStudent.
+         */
+        JButton JButtonDeleteStudent = new JButton("Usun zaznaczonego studenta");
+        JButtonDeleteStudent.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int firstSelectedRow = JListStudents.getSelectedIndex();
+                    nowyzapis.Usun_Studenta_SWING(firstSelectedRow);
+
+                    DefaultListModel<Student> defaultListModelStudents = new DefaultListModel<Student>();
+                    for (int i = 0; i < nowyzapis.getListaStudentow().size(); i++)
+                        defaultListModelStudents.addElement(nowyzapis.getListaStudentow().get(i));
+                    JListStudents.setModel(defaultListModelStudents);
+                } catch (Exception e1) {
+                    JOptionPane.showMessageDialog(null, "Nie wykryto zaznaczenia!");
+                }
+
+            }
+        });
+        JButtonDeleteStudent.setBounds(569, 422, 224, 33);
+        JPanelMainFrame.add(JButtonDeleteStudent);
+
+        /**
+         * Przycisk, który po kliknięciu usuwa, zaznaczony w JListCourses, kurs.
+         * Po wywołaniu metody usuwającej następuje odświeżenie JListCourses oraz JListStudents w celu
+         * odświeżenia punktów ECTS studentów zapisanych wcześniej na ten kurs.
+         */
+        JButton JButtonDeleteCourse = new JButton("Usun zaznaczony kurs");
+        JButtonDeleteCourse.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int firstSelectedRow = JListCourses.getSelectedIndex();
+                    nowyzapis.Usun_Kurs_SWING(firstSelectedRow);
+
+                    DefaultListModel<Course> defaultListModelCourses = new DefaultListModel<Course>();
+                    for (int i = 0; i < nowyzapis.getListaKursow().size(); i++)
+                        defaultListModelCourses.addElement(nowyzapis.getListaKursow().get(i));
+                    JListCourses.setModel(defaultListModelCourses);
+
+                    DefaultListModel<Student> defaultListModelStudents = new DefaultListModel<Student>();
+                    for (int i = 0; i < nowyzapis.getListaStudentow().size(); i++)
+                        defaultListModelStudents.addElement(nowyzapis.getListaStudentow().get(i));
+                    JListStudents.setModel(defaultListModelStudents);
+                } catch (Exception e1) {
+                    JOptionPane.showMessageDialog(null, "Nie wykryto zaznaczenia!");
+                }
+
+            }
+        });
+        JButtonDeleteCourse.setBounds(1143, 422, 224, 33);
+        JPanelMainFrame.add(JButtonDeleteCourse);
+
+        /**
+         * Etykieta nad JListStudents ze studentami.
+         */
+        JLabel JLabelStudents = new JLabel("Lista Studentow:");
+        JLabelStudents.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabelStudents.setForeground(Color.BLACK);
+        JLabelStudents.setFont(new Font("Yu Gothic", Font.PLAIN, 20));
+        JLabelStudents.setBounds(508, 84, 173, 33);
+        JPanelMainFrame.add(JLabelStudents);
+
+        /**
+         * Etykieta nad JListCourses z kursami.
+         */
+        JLabel JLabelCourses = new JLabel("Lista Kursow:");
+        JLabelCourses.setHorizontalAlignment(SwingConstants.CENTER);
+        JLabelCourses.setForeground(Color.BLACK);
+        JLabelCourses.setFont(new Font("Yu Gothic", Font.PLAIN, 20));
+        JLabelCourses.setBounds(1097, 84, 173, 33);
+        JPanelMainFrame.add(JLabelCourses);
+
+        /**
+         * Przycisk, który po kliknięciu wywołuje metodę wczytującą zserializowane wcześniej do pliku listy
+         * studentów oraz kursów.
+         * Po wywołaniu metody wczytującej następuje odświeżenie JListStudents oraz JListCourses.
+         */
+        JButton JButtonLoad = new JButton("Wczytaj");
+        JButtonLoad.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    DefaultListModel<Student> defaultListModelStudents = new DefaultListModel<Student>();
+                    nowyzapis.WczytajMiniEdukacje();
+                    for (int i = 0; i < nowyzapis.getListaStudentow().size(); i++)
+                        defaultListModelStudents.addElement(nowyzapis.getListaStudentow().get(i));
+                    JListStudents.setModel(defaultListModelStudents);
+
+                    DefaultListModel<Course> defaultListModelCourses = new DefaultListModel<Course>();
+                    for (int i = 0; i < nowyzapis.getListaKursow().size(); i++)
+                        defaultListModelCourses.addElement(nowyzapis.getListaKursow().get(i));
+                    JListCourses.setModel(defaultListModelCourses);
+                } catch (ClassNotFoundException e1) {
+                    JOptionPane.showMessageDialog(null, "Nie znaleziono pliku.");
+                }
+            }
+        });
+        JButtonLoad.setBounds(803, 117, 167, 40);
+        JPanelMainFrame.add(JButtonLoad);
+
+        /**
+         * Przycisk, który po kliknięciu wywołuje metodę zapisującą do pliku listy studentów oraz kursów.
+         */
+        JButton JButtonSave = new JButton("Zapisz");
+        JButtonSave.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int selectedOption = JOptionPane.showConfirmDialog(null,
+                        "Czy na pewno chcesz zapisać widoczną MiniEdukację?\nSkutkuje to nadpisaniem poprzedniej" +
+                                ".\nOperacja wymaga potwierdzenia.",
+                        "Wybierz",
+                        JOptionPane.YES_NO_OPTION);
+                if (selectedOption == JOptionPane.YES_OPTION) {
+                    nowyzapis.ZapiszMiniEdukacje();
+                }
+            }
+        });
+        JButtonSave.setBounds(803, 168, 167, 40);
+        JPanelMainFrame.add(JButtonSave);
+
+        /**
+         * Przycisk, który po kliknięciu wywołuje metodę przyporządkowania zaznaczonego studenta do zaznaczonego
+         * kursu.
+         * Po udanym przypisaniu następuje odświeżenie JListStudents w celu ukazania nowej wartości sumy punktów
+         * ECTS danego studenta.
+         */
+        JButton JButtonAssignment = new JButton("Zapisz na kurs");
+        JButtonAssignment.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int firstSelectedRowStudent = JListStudents.getSelectedIndex();
+                    int firstSelectedRowCourse = JListCourses.getSelectedIndex();
+                    int selectedOption = JOptionPane.showConfirmDialog(null,
+                            "Czy na pewno chcesz przypisac studenta " + nowyzapis.getListaStudentow().get
+                                    (firstSelectedRowStudent).getImie() + " " + nowyzapis.getListaStudentow().get
+                                    (firstSelectedRowStudent).getNazwisko() + " do kursu " + nowyzapis.getListaKursow
+                                    ().get(firstSelectedRowCourse).getNazwa() + "?",
+                            "Potwierdz",
+                            JOptionPane.YES_NO_OPTION);
+                    if (selectedOption == JOptionPane.YES_OPTION) {
+                        nowyzapis.Dodaj_Przyporzadkowanie_SWING(firstSelectedRowStudent, firstSelectedRowCourse);
+                        JTextPaneStudentDetails.setText(nowyzapis.getListaStudentow().get(firstSelectedRowStudent)
+                                .WyswietlListeKursowStudenta());
+                        JLabelStudent.setText(nowyzapis.getListaStudentow().get(firstSelectedRowStudent).getImie() +
+                                " " + nowyzapis.getListaStudentow().get(JListStudents.getSelectedIndex()).getNazwisko
+                                ());
+                        JTextPaneCourseDetails.setText(nowyzapis.getListaKursow().get(firstSelectedRowCourse)
+                                .WyswietlListeStudentowKursu());
+                        JLabelCourse.setText(nowyzapis.getListaKursow().get(firstSelectedRowCourse).getNazwa());
+
+                        DefaultListModel<Student> defaultListModelStudents = new DefaultListModel<Student>();
+                        for (int i = 0; i < nowyzapis.getListaStudentow().size(); i++)
+                            defaultListModelStudents.addElement(nowyzapis.getListaStudentow().get(i));
+                        JListStudents.setModel(defaultListModelStudents);
+                    }
+                } catch (Exception e1) {
+                    JOptionPane.showMessageDialog(null, "Aby przypisac studenta do kursu, w pierwszej kolejnosci " +
+                            "zaznacz studenta oraz odpowiedni kurs!");
+                }
+
+
+            }
+        });
+        JButtonAssignment.setToolTipText("");
+        JButtonAssignment.setBounds(803, 353, 167, 40);
+        JPanelMainFrame.add(JButtonAssignment);
+
+        /**
+         * Przycisk opcji, który po kliknięciu wywołuje metody sortujące Listy Kursów i Studentów alfabetycznie.
+         * Po sortowaniu następuje odświeżenie JListStudents oraz JListCourses.
+         */
+        JRadioButton JRadioButtonNormalSorting = new JRadioButton("Sortowanie alfabetyczne");
+        JRadioButtonNormalSorting.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                nowyzapis.Sortuj_Alfabetycznie_Studentow();
+                nowyzapis.Sortuj_Alfabetycznie_Kursy();
+
+                DefaultListModel<Student> defaultListModelStudents = new DefaultListModel<Student>();
+                for (int i = 0; i < nowyzapis.getListaStudentow().size(); i++)
+                    defaultListModelStudents.addElement(nowyzapis.getListaStudentow().get(i));
+                JListStudents.setModel(defaultListModelStudents);
+
+                DefaultListModel<Course> defaultListModelCourses = new DefaultListModel<Course>();
+                for (int i = 0; i < nowyzapis.getListaKursow().size(); i++)
+                    defaultListModelCourses.addElement(nowyzapis.getListaKursow().get(i));
+                JListCourses.setModel(defaultListModelCourses);
+
+            }
+        });
+        JRadioButtonNormalSorting.setSelected(true);
+        JRadioButtonNormalSorting.setBounds(803, 249, 171, 23);
+        JPanelMainFrame.add(JRadioButtonNormalSorting);
+
+        /**
+         * Przycisk opcji, który po kliknięciu wywołuje metody sortujące Listy Kursów i Studentów wg pkt ECTS
+         * oraz wg STAŻU.
+         * Po sortowaniu następuje odświeżenie JListStudents oraz JListCourses.
+         */
+        JRadioButton JRadioButtonAlternativeSorting = new JRadioButton("Sortowanie alternatywne");
+        JRadioButtonAlternativeSorting.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                nowyzapis.Sortuj_Kursy_Po_ECTS();
+                nowyzapis.Sortuj_Studentow_Po_Stazu();
+
+                DefaultListModel<Student> defaultListModelStudents = new DefaultListModel<Student>();
+                for (int i = 0; i < nowyzapis.getListaStudentow().size(); i++)
+                    defaultListModelStudents.addElement(nowyzapis.getListaStudentow().get(i));
+                JListStudents.setModel(defaultListModelStudents);
+
+                DefaultListModel<Course> defaultListModelCourses = new DefaultListModel<Course>();
+                for (int i = 0; i < nowyzapis.getListaKursow().size(); i++)
+                    defaultListModelCourses.addElement(nowyzapis.getListaKursow().get(i));
+                JListCourses.setModel(defaultListModelCourses);
+
+            }
+        });
+        JRadioButtonAlternativeSorting.setBounds(803, 275, 171, 23);
+        JPanelMainFrame.add(JRadioButtonAlternativeSorting);
+
+        /**
+         * Zgrupowanie powyższych przycisków opcji.
+         */
+        ButtonGroup ButtonGroupOfSorts = new ButtonGroup();
+        ButtonGroupOfSorts.add(JRadioButtonNormalSorting);
+        ButtonGroupOfSorts.add(JRadioButtonAlternativeSorting);
+
+        /**
+         * Przycisk, który po kliknięciu zamyka aplikację.
+         */
+        JButton JButtonClose = new JButton("Zamknij");
+        JButtonClose.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int selectedOption = JOptionPane.showConfirmDialog(null,
+                        "Czy na pewno chcesz wyjsc z aplikacji?",
+                        "Wybierz",
+                        JOptionPane.YES_NO_OPTION);
+                if (selectedOption == JOptionPane.YES_OPTION) {
+                    MainFrame.this.dispose();
+                }
+            }
+        });
+        JButtonClose.setBounds(1458, 466, 250, 33);
+        JPanelMainFrame.add(JButtonClose);
+
+        /**
+         * Przycisk, który po kliknięciu wyświetla nowy Frame z listami przyporządkować studentów do kursów oraz
+         * kursów do studentów.
+         * MainFrame przekazany aby móc go odmrozić po zamknięciu addCourseFrame.
+         */
+        JButton JButtonShowRecords = new JButton("Wyswietl przyporzadkowania");
+        JButtonShowRecords.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                setEnabled(false);
+                ListsFrame listsFrame = new ListsFrame(MainFrame.this, nowyzapis);
+                listsFrame.setVisible(true);
+            }
+        });
+        JButtonShowRecords.setBounds(76, 466, 250, 33);
+        JPanelMainFrame.add(JButtonShowRecords);
+    }
+}
