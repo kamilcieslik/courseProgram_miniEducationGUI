@@ -4,135 +4,103 @@ import java.util.Calendar;
 import java.util.List;
 
 public class Student implements Comparable<Student>, Serializable {
-
     private static final long serialVersionUID = -8809444346662435457L;
-    private String Imie;
-    private String Nazwisko;
-    private int Nr_Indeksu;
-    private int Rok_Rozpoczecia_Studiow;
-    private int Staz;
+    private String name;
+    private String surname;
+    private int index;
+    private int yearOfCommencement;
+    private int internship;
     private int totalECTS = 0;
+    private List<Course> listOfStudentCourses = new ArrayList<>();
 
-
-    private List<Course> ListaKursowStudenta = new ArrayList<Course>();
-
-    Student() {
-        _setImie(ReadData.getNameJFC("Podaj imie: "));
-        _setNazwisko(ReadData.getNameJFC("Podaj nazwisko: "));
-        _setNr_Indeksu(ReadData.getNumer_IndeksuJFC("Podaj numer indeksu: "));
-        Rok_Rozpoczecia_Studiow = ReadData.getRok_RozpoczeciaJFC("Podaj rok w ktorym zaczales studiowac. Jezeli " +
+    Student(int index) {
+        this.index = index;
+        _setName(ReadData.GetNameJFC("Podaj imie: "));
+        _setSurname(ReadData.GetNameJFC("Podaj nazwisko: "));
+        yearOfCommencement = ReadData.GetYearOfCommencement("Podaj rok w ktorym zaczales studiowac. Jezeli " +
                 "nasza uczelnia jest Twoja pierwsza, podaj biezacy rok.");
-        ObliczStaz();
-    }
-
-    Student(int indeks) {
-        Nr_Indeksu = indeks;
-        _setImie(ReadData.getNameJFC("Podaj imie: "));
-        _setNazwisko(ReadData.getNameJFC("Podaj nazwisko: "));
-        Rok_Rozpoczecia_Studiow = ReadData.getRok_RozpoczeciaJFC("Podaj rok w ktorym zaczales studiowac. Jezeli " +
-				"nasza uczelnia jest Twoja pierwsza, podaj biezacy rok.");
-        ObliczStaz();
+        CalculateInternship();
     }
 
     Student(int index, String name, String surname, int yearOfTheBeginning) {
-        Nr_Indeksu = index;
-        Imie = name;
-        Nazwisko = surname;
-        Rok_Rozpoczecia_Studiow = yearOfTheBeginning;
-        ObliczStaz();
+        this.index = index;
+        this.name = name;
+        this.surname = surname;
+        yearOfCommencement = yearOfTheBeginning;
+        CalculateInternship();
     }
 
-    public void setTotalECTS(int totalECTS) {
+    void setTotalECTS(int totalECTS) {
         this.totalECTS += totalECTS;
     }
 
-    public int getTotalECTS() {
+    int getTotalECTS() {
         return totalECTS;
     }
 
-    public String getImie() {
-        return Imie;
+    String getName() {
+        return name;
     }
 
-    private void _setImie(String imie) {
-        Imie = imie;
+    private void _setName(String imie) {
+        name = imie;
     }
 
-    public String getNazwisko() {
-        return Nazwisko;
+    String getSurname() {
+        return surname;
     }
 
-    private void _setNazwisko(String nazwisko) {
-        Nazwisko = nazwisko;
+    private void _setSurname(String nazwisko) {
+        surname = nazwisko;
     }
 
-    public int getNr_Indeksu() {
-        return Nr_Indeksu;
+    int GetIndexNumber() {
+        return index;
     }
 
-    private void _setNr_Indeksu(int nr_Indeksu) {
-        Nr_Indeksu = nr_Indeksu;
+    int GetInternship() {
+        return internship;
     }
 
-    public int getStaz() {
-        return Staz;
-    }
-
-    public void ObliczStaz() {
+    private void CalculateInternship() {
         Calendar calendar = Calendar.getInstance();
-        Staz = (calendar.get(Calendar.YEAR) - Rok_Rozpoczecia_Studiow);
-    }
-
-    public void wprowadzDane() {
-        _setImie(ReadData.getNameJFC("Podaj imie: "));
-        _setNazwisko(ReadData.getNameJFC("Podaj nazwisko: "));
-        _setNr_Indeksu(ReadData.getNumer_IndeksuJFC("Podaj numer indeksu: "));
-        Rok_Rozpoczecia_Studiow = ReadData.getRok_RozpoczeciaJFC("Podaj rok w ktorym zaczales studiowac. Jezeli " +
-				"nasza uczelnia jest Twoja pierwsza, podaj biezacy rok.");
-        ObliczStaz();
+        internship = (calendar.get(Calendar.YEAR) - yearOfCommencement);
     }
 
     public String toString() {
-        return (Nazwisko + " " + Imie + ", INDEKS: " + Nr_Indeksu + ", STAZ: " + Staz + ", ECTS: " + totalECTS);
+        return (surname + " " + name + ", INDEKS: " + index + ", STAZ: " + internship + ", ECTS: " + totalECTS);
     }
 
     @Override
     public int compareTo(Student o) {
-        int porownaneNazwiska = Nazwisko.compareTo(o.getNazwisko());
+        int comparedNames = surname.compareTo(o.getSurname());
 
-        if (porownaneNazwiska == 0) {
-            return Imie.compareTo(o.getImie());
+        if (comparedNames == 0) {
+            return name.compareTo(o.getName());
         } else {
-            return porownaneNazwiska;
+            return comparedNames;
         }
     }
 
-
-    public List<Course> getListaKursowStudenta() {
-        return ListaKursowStudenta;
+    List<Course> GetListOfStudentCourses() {
+        return listOfStudentCourses;
     }
 
-
-    public void setListaKursowStudenta(List<Course> listaKursowStudenta) {
-        ListaKursowStudenta = listaKursowStudenta;
+    void AddCourse(Course kurs) {
+        listOfStudentCourses.add(kurs);
     }
 
-    public void DodajKurs(Course kurs) {
-        ListaKursowStudenta.add(kurs);
+    void RemoveCourse(Course kurs) {
+        listOfStudentCourses.remove(kurs);
     }
 
-    public void UsunKurs(Course kurs) {
-        ListaKursowStudenta.remove(kurs);
-    }
-
-    public String WyswietlListeKursowStudenta() {
-        String tmp = "";
-        if (ListaKursowStudenta.size() != 0) {
-            for (Course a : ListaKursowStudenta) {
-                tmp += "- " + a.toString() + "\n";
+    String ShowListOfStudentCourses() {
+        StringBuilder tmp = new StringBuilder();
+        if (listOfStudentCourses.size() != 0) {
+            for (Course a : listOfStudentCourses) {
+                tmp.append("- ").append(a.toString()).append("\n");
             }
-        } else tmp = "- student nie zostać zapisany na żaden kurs.\n";
-        return tmp;
+        } else tmp = new StringBuilder("- student nie zostać zapisany na żaden kurs.\n");
+        return tmp.toString();
     }
-
 }

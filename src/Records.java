@@ -1,75 +1,68 @@
-/**
- * Created by mrfarinq on 25.06.17.
+/*
+  Created by mrfarinq on 25.06.17.
  */
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
+import javax.swing.*;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
-
-import javax.swing.JOptionPane;
+import java.util.List;
 
 public class Records {
-
-    private List<Student> ListaStudentow = new ArrayList<Student>();
-    private List<Course> ListaKursow = new ArrayList<Course>();
+    private List<Student> listOfStudents = new ArrayList<>();
+    private List<Course> listOfCourses = new ArrayList<>();
     private String fileNameStudents = "students.bin";
     private String fileNameCourses = "courses.bin";
 
-    public List<Student> getListaStudentow() {
-        return ListaStudentow;
+    List<Student> GetStudentsList() {
+        return listOfStudents;
     }
 
-    public List<Course> getListaKursow() {
-        return ListaKursow;
+    List<Course> GetCoursesList() {
+        return listOfCourses;
     }
 
-    public boolean Znajdz_Studenta_Po_Indeksie(int indeks) {
-        boolean opcja = false;
-        for (Student a : ListaStudentow)
-            if (a.getNr_Indeksu() == indeks) opcja = true;
+    private boolean FindStudentByIndex(int index) {
+        boolean option = false;
+        for (Student a : listOfStudents)
+            if (a.GetIndexNumber() == index) option = true;
 
-        return opcja;
+        return option;
     }
 
-    public void Dodaj_Studenta() throws Exception {
-        boolean blad;
-        int indeks;
+    private void AddStudent() throws Exception {
+        boolean error;
+        int index;
         do {
-            blad = false;
+            error = false;
             try {
-                indeks = ReadData.getNumer_IndeksuJFC("Podaj numer indeksu");
-                if (Znajdz_Studenta_Po_Indeksie(indeks) == false) {
-                    Student nowystudent = new Student(indeks);
-                    ListaStudentow.add(nowystudent);
-                    Sortuj_Alfabetycznie_Studentow();
+                index = ReadData.GetStudentIndexJFC("Podaj numer indeksu");
+                if (!FindStudentByIndex(index)) {
+                    Student newStudent = new Student(index);
+                    listOfStudents.add(newStudent);
+                    SortStudentByName();
                 } else throw new Exception("Student o podanym indeksie juz istnieje!");
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e.getMessage());
-                blad = true;
+                error = true;
             }
 
-        } while (blad);
+        } while (error);
     }
 
-    public void Dodaj_Studenta_SWING(String index, String name, String surname, String yearOfTheBeginning) {
-        if ((index.isEmpty() == true) || (name.isEmpty() == true) || (surname.isEmpty() == true) ||
-                (yearOfTheBeginning.isEmpty() == true)) {
+    void AddStudentSWING(String index, String name, String surname, String yearOfTheBeginning) {
+        if ((index.isEmpty()) || (name.isEmpty()) || (surname.isEmpty()) ||
+                (yearOfTheBeginning.isEmpty())) {
             JOptionPane.showMessageDialog(null, "Nie podano wystarczających danych!");
         } else {
             if (index.matches("^[0-9][0-9][0-9][0-9][0-9][0-9]")) {
                 if ((name.matches("^[A-Z]{1}[a-z]+"))) {
                     if ((surname.matches("^[A-Z]{1}[a-z]+"))) {
-                        if (Znajdz_Studenta_Po_Indeksie(Integer.parseInt(index)) == false) {
+                        if (!FindStudentByIndex(Integer.parseInt(index))) {
                             Student nowystudent = new Student(Integer.parseInt(index), name, surname, Integer
                                     .parseInt(yearOfTheBeginning));
-                            ListaStudentow.add(nowystudent);
+                            listOfStudents.add(nowystudent);
                             JOptionPane.showMessageDialog(null, "Student dodany pomyslnie.");
                         } else {
                             JOptionPane.showMessageDialog(null, "Student o podanym numerze indeksu juz istnieje!");
@@ -88,13 +81,13 @@ public class Records {
         }
     }
 
-    public void Dodaj_Kurs_SWING(String name, String _ECTS) {
-        if (name.isEmpty() == true) {
+    void AddCourseSWING(String name, String _ects) {
+        if (name.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Nie podano wystarczaj�cych danych!");
         } else if (name.matches("^[A-Z]{1}[a-z]+")) {
-            if (Znajdz_Kurs_Po_Nazwie(name) == false) {
-                Course nowykurs = new Course(name, Integer.parseInt(_ECTS));
-                ListaKursow.add(nowykurs);
+            if (!FindCourseByName(name)) {
+                Course newCourse = new Course(name, Integer.parseInt(_ects));
+                listOfCourses.add(newCourse);
                 JOptionPane.showMessageDialog(null, "Course dodany pomyslnie.");
             } else {
                 JOptionPane.showMessageDialog(null, "Course o podanej nazwie juz istnieje!");
@@ -105,343 +98,334 @@ public class Records {
         }
     }
 
-    public void Usun_Studenta() throws Exception {
-        String tmp = "";
-        boolean blad = false;
+    private void RemoveStudent() throws Exception {
+        StringBuilder tmp = new StringBuilder();
+        boolean error = false;
         int i = 0;
         try {
-            Iterator<Student> itr = ListaStudentow.iterator();
-            while (itr.hasNext()) {
+            for (Student listOfStudent : listOfStudents) {
                 i++;
-                tmp += "\n" + i + ") " + (itr.next());
+                tmp.append("\n").append(i).append(") ").append(listOfStudent);
             }
-            if (ListaStudentow.size() == 0) throw new Exception("Nie ma co usuwac. Brak studentow!");
+            if (listOfStudents.size() == 0) throw new Exception("Nie ma co usuwac. Brak studentow!");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage());
-            blad = true;
+            error = true;
         }
-        if (blad == false) {
-            tmp += "\n\nKt�rego studenta usunac? ";
-            int n = ReadData.getIntJFC(tmp);
-            if (n < 1 || n > ListaStudentow.size()) {
+        if (!error) {
+            tmp.append("\n\nKtórego studenta usunac? ");
+            int n = ReadData.GetIntJFC(tmp.toString());
+            if (n < 1 || n > listOfStudents.size()) {
                 JOptionPane.showMessageDialog(null, "Brak studenta o numerze " + n);
                 return;
 
             }
 
-            for (int j = 0; j < ListaKursow.size(); j++) {
-                if (ListaKursow.get(j).getListaStudentowKursu().contains(ListaStudentow.get(n - 1)))
-                    ListaKursow.get(j).UsunStudenta(ListaStudentow.get(n - 1));
+            for (Course listOfCourse : listOfCourses) {
+                if (listOfCourse.getListOfCourseStudents().contains(listOfStudents.get(n - 1)))
+                    listOfCourse.RemoveStudent(listOfStudents.get(n - 1));
             }
-            ListaStudentow.remove(n - 1);
+            listOfStudents.remove(n - 1);
 
 
-        } else return;
-    }
-
-    public void Usun_Studenta_SWING(int indeks) throws Exception {
-        for (int j = 0; j < ListaKursow.size(); j++) {
-            if (ListaKursow.get(j).getListaStudentowKursu().contains(ListaStudentow.get(indeks)))
-                ListaKursow.get(j).UsunStudenta(ListaStudentow.get(indeks));
         }
-        ListaStudentow.remove(indeks);
     }
 
-    public void Usun_Kurs_SWING(int indeks) throws Exception {
-        for (int j = 0; j < ListaStudentow.size(); j++) {
-            if (ListaStudentow.get(j).getListaKursowStudenta().contains(ListaKursow.get(indeks))) {
-                ListaStudentow.get(j).UsunKurs(ListaKursow.get(indeks));
-                ListaStudentow.get(j).setTotalECTS(-ListaKursow.get(indeks).getECTS());
+    void RemoveStudentSWING(int index) throws Exception {
+        for (Course listOfCourse : listOfCourses) {
+            if (listOfCourse.getListOfCourseStudents().contains(listOfStudents.get(index)))
+                listOfCourse.RemoveStudent(listOfStudents.get(index));
+        }
+        listOfStudents.remove(index);
+    }
+
+    void RemoveCourseSWING(int index) throws Exception {
+        for (Student listOfStudent : listOfStudents) {
+            if (listOfStudent.GetListOfStudentCourses().contains(listOfCourses.get(index))) {
+                listOfStudent.RemoveCourse(listOfCourses.get(index));
+                listOfStudent.setTotalECTS(-listOfCourses.get(index).GetEcts());
             }
         }
-        ListaKursow.remove(indeks);
+        listOfCourses.remove(index);
     }
 
-    public void WyswietlStudentow() {
-        String tmp = "";
-        if (ListaStudentow.size() != 0) {
-            tmp = "Studenci: ";
+    private void ShowStudents() {
+        StringBuilder tmp;
+        if (listOfStudents.size() != 0) {
+            tmp = new StringBuilder("Studenci: ");
             int i = 0;
-            for (Student a : ListaStudentow) {
+            for (Student a : listOfStudents) {
                 i++;
-                tmp += "\n" + i + ") " + a.toString();
+                tmp.append("\n").append(i).append(") ").append(a.toString());
             }
-        } else tmp = "Brak studentow!";
-        JOptionPane.showMessageDialog(null, tmp);
-        Sortuj_Alfabetycznie_Studentow();
+        } else tmp = new StringBuilder("Brak studentow!");
+        JOptionPane.showMessageDialog(null, tmp.toString());
+        SortStudentByName();
     }
 
-    public void Sortuj_Alfabetycznie_Studentow() {
-        Collections.sort(ListaStudentow);
+    void SortStudentByName() {
+        Collections.sort(listOfStudents);
     }
 
-    public void Sortuj_Studentow_Po_Stazu() {
-        Collections.sort(ListaStudentow, new KomparatorStaz());
+    void SortStudentsByInternship() {
+        listOfStudents.sort(new ComparatorInternship());
     }
 
-    private class KomparatorStaz implements Comparator<Student> {
+    private class ComparatorInternship implements Comparator<Student> {
 
         @Override
         public int compare(Student o1, Student o2) {
-            int Staz = o1.getStaz() - o2.getStaz();
-            if (Staz == 0) {
+            int Internship = o1.GetInternship() - o2.GetInternship();
+            if (Internship == 0) {
                 return o1.compareTo(o2);
             }
-            return Staz;
+            return Internship;
         }
     }
 
-    public boolean Znajdz_Kurs_Po_Nazwie(String nazwa) {
-        boolean opcja = false;
-        for (Course a : ListaKursow)
-            if (a.getNazwa().equals(nazwa)) opcja = true;
+    private boolean FindCourseByName(String name) {
+        boolean option = false;
+        for (Course a : listOfCourses)
+            if (a.getName().equals(name)) option = true;
 
-        return opcja;
+        return option;
     }
 
-    public void Dodaj_Kurs() throws Exception {
-        boolean blad;
-        String nazwa;
+    private void AddCourse() throws Exception {
+        boolean error;
+        String name;
         do {
-            blad = false;
+            error = false;
             try {
-                nazwa = ReadData.getNameJFC("Podaj nazwe kursu: ");
-                if (Znajdz_Kurs_Po_Nazwie(nazwa) == false) {
-                    Course nowykurs = new Course(nazwa);
-                    ListaKursow.add(nowykurs);
-                    Sortuj_Alfabetycznie_Kursy();
-                } else throw new Exception("Course o podanej nazwie juz istnieje!");
+                name = ReadData.GetNameJFC("Podaj nazwe kursu: ");
+                if (!FindCourseByName(name)) {
+                    Course newCourse = new Course(name);
+                    listOfCourses.add(newCourse);
+                    SortCoursesByName();
+                } else throw new Exception("Kurs o podanej nazwie juz istnieje!");
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e.getMessage());
-                blad = true;
+                error = true;
             }
 
-        } while (blad);
+        } while (error);
     }
 
-    public void Usun_Kurs() throws Exception {
-        String tmp = "";
-        boolean blad = false;
+    private void RemoveCourse() throws Exception {
+        StringBuilder tmp = new StringBuilder();
+        boolean error = false;
         int i = 0;
         try {
-            Iterator<Course> itr = ListaKursow.iterator();
-            while (itr.hasNext()) {
+            for (Course listOfCourse : listOfCourses) {
                 i++;
-                tmp += "\n" + i + ") " + (itr.next());
+                tmp.append("\n").append(i).append(") ").append(listOfCourse);
             }
-            if (ListaKursow.size() == 0) throw new Exception("Nie ma co usuwac. Brak kursow!");
+            if (listOfCourses.size() == 0) throw new Exception("Nie ma co usuwac. Brak kursow!");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage());
-            blad = true;
+            error = true;
         }
-        if (blad == false) {
-            tmp += "\n\nKtórego kurs usunac? ";
-            int n = ReadData.getIntJFC(tmp);
-            if (n < 1 || n > ListaKursow.size()) {
+        if (!error) {
+            tmp.append("\n\nKtóry kurs usunac? ");
+            int n = ReadData.GetIntJFC(tmp.toString());
+            if (n < 1 || n > listOfCourses.size()) {
                 JOptionPane.showMessageDialog(null, "Brak kursu o numerze " + n);
                 return;
 
             }
 
-            for (int j = 0; j < ListaStudentow.size(); j++) {
-                if (ListaStudentow.get(j).getListaKursowStudenta().contains(ListaKursow.get(n - 1)))
-                    ListaStudentow.get(j).UsunKurs(ListaKursow.get(n - 1));
+            for (Student listOfStudent : listOfStudents) {
+                if (listOfStudent.GetListOfStudentCourses().contains(listOfCourses.get(n - 1)))
+                    listOfStudent.RemoveCourse(listOfCourses.get(n - 1));
             }
-            ListaKursow.remove(n - 1);
+            listOfCourses.remove(n - 1);
 
-        } else return;
+        }
     }
 
-
-    public void WyswietlKursy() {
-        String tmp = "";
-        if (ListaKursow.size() != 0) {
-            tmp = "Kursy: ";
+    private void ShowCourses() {
+        StringBuilder tmp;
+        if (listOfCourses.size() != 0) {
+            tmp = new StringBuilder("Kursy: ");
             int i = 0;
-            for (Course a : ListaKursow) {
+            for (Course a : listOfCourses) {
                 i++;
-                tmp += "\n" + i + ") " + a.toString();
+                tmp.append("\n").append(i).append(") ").append(a.toString());
             }
-        } else tmp = "Brak kursow!";
-        JOptionPane.showMessageDialog(null, tmp);
-        Sortuj_Alfabetycznie_Kursy();
+        } else tmp = new StringBuilder("Brak kursow!");
+        JOptionPane.showMessageDialog(null, tmp.toString());
+        SortCoursesByName();
     }
 
-    public void Sortuj_Alfabetycznie_Kursy() {
-        Collections.sort(ListaKursow);
+    void SortCoursesByName() {
+        Collections.sort(listOfCourses);
     }
 
-    public void Sortuj_Kursy_Po_ECTS() {
-        Collections.sort(ListaKursow, new KomparatorECTS());
+    void SortCoursesByECTS() {
+        listOfCourses.sort(new ComparatorECTS());
     }
 
-    private class KomparatorECTS implements Comparator<Course> {
+    private class ComparatorECTS implements Comparator<Course> {
 
         @Override
         public int compare(Course o1, Course o2) {
-            int ECTS = o1.getECTS() - o2.getECTS();
-            if (ECTS == 0) {
+            int ects = o1.GetEcts() - o2.GetEcts();
+            if (ects == 0) {
                 return o1.compareTo(o2);
             }
-            return ECTS;
+            return ects;
         }
     }
 
-    public void Dodaj_Przyporzadkowanie() {
-        String tmp = "";
-        boolean blad = false;
+    private void AddAssignment() {
+        StringBuilder tmp = new StringBuilder();
+        boolean error = false;
         int i = 0;
         try {
-            Iterator<Student> itr = ListaStudentow.iterator();
-            while (itr.hasNext()) {
+            for (Student listOfStudent : listOfStudents) {
                 i++;
-                tmp += "\n" + i + ") " + (itr.next());
+                tmp.append("\n").append(i).append(") ").append(listOfStudent);
             }
-            if (ListaStudentow.size() == 0) throw new Exception("Nie ma kogo przyporzadkowywac. Brak studentow!");
+            if (listOfStudents.size() == 0) throw new Exception("Nie ma kogo przyporzadkowywac. Brak studentow!");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage());
-            blad = true;
+            error = true;
         }
-        if (blad == false) {
-            tmp += "\n\nKtórego studenta przyporzadkowac? ";
-            int n = ReadData.getIntJFC(tmp);
-            if (n < 1 || n > ListaStudentow.size()) {
+        if (!error) {
+            tmp.append("\n\nKtórego studenta przyporzadkowac? ");
+            int n = ReadData.GetIntJFC(tmp.toString());
+            if (n < 1 || n > listOfStudents.size()) {
                 JOptionPane.showMessageDialog(null, "Brak studenta o numerze " + n);
                 return;
 
             }
-            String tmp2 = "";
-            blad = false;
+            StringBuilder tmp2 = new StringBuilder();
+            error = false;
             i = 0;
             try {
-                Iterator<Course> itr = ListaKursow.iterator();
-                while (itr.hasNext()) {
+                for (Course listOfCourse : listOfCourses) {
                     i++;
-                    tmp2 += "\n" + i + ") " + (itr.next());
+                    tmp2.append("\n").append(i).append(") ").append(listOfCourse);
                 }
-                if (ListaKursow.size() == 0)
+                if (listOfCourses.size() == 0)
                     throw new Exception("Niestety w chwili obecnej nie mamy dla Ciebie zadnego kursu");
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e.getMessage());
-                blad = true;
+                error = true;
             }
-            if (blad == false) {
-                tmp2 += "\n\nKtory kurs wybierasz? ";
-                int n2 = ReadData.getIntJFC(tmp2);
-                if (n2 < 1 || n2 > ListaKursow.size()) {
+            if (!error) {
+                tmp2.append("\n\nKtory kurs wybierasz? ");
+                int n2 = ReadData.GetIntJFC(tmp2.toString());
+                if (n2 < 1 || n2 > listOfCourses.size()) {
                     JOptionPane.showMessageDialog(null, "Brak kursu o numerze " + n2);
                     return;
 
                 }
 
-                if (ListaStudentow.get(n - 1).getListaKursowStudenta().contains(ListaKursow.get(n2 - 1))) {
+                if (listOfStudents.get(n - 1).GetListOfStudentCourses().contains(listOfCourses.get(n2 - 1))) {
                     JOptionPane.showMessageDialog(null, "Zapis nieudany. Student nie moze byc zapisany na dwa " +
                             "indentyczne kursy!");
-                    return;
                 } else {
-                    if ((ListaStudentow.get(n - 1)).getTotalECTS() + ListaKursow.get(n2 - 1).getECTS() > 30) {
+                    if ((listOfStudents.get(n - 1)).getTotalECTS() + listOfCourses.get(n2 - 1).GetEcts() > 30) {
                         JOptionPane.showMessageDialog(null, "Zapis nieudany. Student moze miec maksymalnie 30 pkt " +
                                 "ECTS.");
                     } else {
-                        ListaStudentow.get(n - 1).DodajKurs(ListaKursow.get(n2 - 1));
-                        ListaKursow.get(n2 - 1).DodajStudenta(ListaStudentow.get(n - 1));
+                        listOfStudents.get(n - 1).AddCourse(listOfCourses.get(n2 - 1));
+                        listOfCourses.get(n2 - 1).AddStudent(listOfStudents.get(n - 1));
                         JOptionPane.showMessageDialog(null, "Zapisano pomyslnie.");
-                        ListaStudentow.get(n - 1).setTotalECTS(ListaKursow.get(n2 - 1).getECTS());
+                        listOfStudents.get(n - 1).setTotalECTS(listOfCourses.get(n2 - 1).GetEcts());
                     }
                 }
 
-            } else return;
+            }
         }
     }
 
-    public void Dodaj_Przyporzadkowanie_SWING(int selectedRowStudent, int selectedRowCourse) {
+    void AddAssignmentSWING(int selectedRowStudent, int selectedRowCourse) {
 
-        if (ListaStudentow.get(selectedRowStudent).getListaKursowStudenta().contains(ListaKursow.get
+        if (listOfStudents.get(selectedRowStudent).GetListOfStudentCourses().contains(listOfCourses.get
                 (selectedRowCourse))) {
             JOptionPane.showMessageDialog(null, "Zapis nieudany. Student nie moze byc zapisany na dwa indentyczne " +
                     "kursy!");
-            return;
         } else {
-            if ((ListaStudentow.get(selectedRowStudent).getTotalECTS() + ListaKursow.get(selectedRowCourse).getECTS()
+            if ((listOfStudents.get(selectedRowStudent).getTotalECTS() + listOfCourses.get(selectedRowCourse).GetEcts()
             ) > 30) {
                 JOptionPane.showMessageDialog(null, "Zapis nieudany. Student moze miec maksymalnie 30 pkt ECTS.");
             } else {
-                ListaStudentow.get(selectedRowStudent).DodajKurs(ListaKursow.get(selectedRowCourse));
-                ListaKursow.get(selectedRowCourse).DodajStudenta(ListaStudentow.get(selectedRowStudent));
+                listOfStudents.get(selectedRowStudent).AddCourse(listOfCourses.get(selectedRowCourse));
+                listOfCourses.get(selectedRowCourse).AddStudent(listOfStudents.get(selectedRowStudent));
                 JOptionPane.showMessageDialog(null, "Zapisano pomyslnie.");
-                ListaStudentow.get(selectedRowStudent).setTotalECTS(ListaKursow.get(selectedRowCourse).getECTS());
+                listOfStudents.get(selectedRowStudent).setTotalECTS(listOfCourses.get(selectedRowCourse).GetEcts());
             }
         }
     }
 
-    public void Wyswietl_Kursy_Ze_Studentami() {
+    private void ShowCoursesWithStudents() {
         String tmp = "";
-        if (ListaKursow.size() != 0) {
-            for (Course a : ListaKursow) {
+        if (listOfCourses.size() != 0) {
+            for (Course a : listOfCourses) {
                 tmp += a.toString() + ":\n";
-                tmp += a.WyswietlListeStudentowKursu();
+                tmp += a.ShowListOfCourseStudents();
             }
         } else tmp = "Brak kursow!";
         JOptionPane.showMessageDialog(null, tmp);
     }
 
-    public String Wyswietl_Kursy_Ze_Studentami_SWING() {
+    String ShowCoursesWithStudentsSWING() {
         String tmp = "";
-        if (ListaKursow.size() != 0) {
-            for (Course a : ListaKursow) {
+        if (listOfCourses.size() != 0) {
+            for (Course a : listOfCourses) {
                 tmp += a.toString() + ":\n";
-                tmp += a.WyswietlListeStudentowKursu();
+                tmp += a.ShowListOfCourseStudents();
             }
         } else tmp = "Brak kursow!";
         return tmp;
     }
 
-    public void Wyswietl_Studentow_Z_Kursami() {
+    private void ShowStudentsWithCourses() {
         String tmp = "";
-        if (ListaStudentow.size() != 0) {
-            for (Student a : ListaStudentow) {
+        if (listOfStudents.size() != 0) {
+            for (Student a : listOfStudents) {
                 tmp += a.toString() + ":\n";
-                tmp += a.WyswietlListeKursowStudenta();
+                tmp += a.ShowListOfStudentCourses();
             }
         } else tmp = "Brak studentow!";
         JOptionPane.showMessageDialog(null, tmp);
     }
 
-    public String Wyswietl_Studentow_Z_Kursami_SWING() {
+    String ShowStudentsWithCoursesSWING() {
         String tmp = "";
-        if (ListaStudentow.size() != 0) {
-            for (Student a : ListaStudentow) {
+        if (listOfStudents.size() != 0) {
+            for (Student a : listOfStudents) {
                 tmp += a.toString() + ":\n";
-                tmp += a.WyswietlListeKursowStudenta();
+                tmp += a.ShowListOfStudentCourses();
             }
         } else tmp = "Brak studentow!";
         return tmp;
     }
 
-    public void ZapiszMiniEdukacje() {
+    void SaveMiniEducation() {
 
         try {
             ObjectOutputStream osStudents = new ObjectOutputStream(new FileOutputStream(fileNameStudents));
-            osStudents.writeObject(ListaStudentow);
+            osStudents.writeObject(listOfStudents);
             osStudents.close();
             ObjectOutputStream osCourses = new ObjectOutputStream(new FileOutputStream(fileNameCourses));
-            osCourses.writeObject(ListaKursow);
+            osCourses.writeObject(listOfCourses);
             osCourses.close();
-        } catch (FileNotFoundException e) {
-            JOptionPane.showMessageDialog(null, e.getMessage());
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, e.getMessage());
         }
     }
 
     @SuppressWarnings("unchecked")
-    public void WczytajMiniEdukacje() throws ClassNotFoundException {
+    void ReadMiniEducation() throws ClassNotFoundException {
         try {
             ObjectInputStream isStudents = new ObjectInputStream(new FileInputStream(fileNameStudents));
-            ListaStudentow = (List<Student>) isStudents.readObject();
+            listOfStudents = (List<Student>) isStudents.readObject();
             isStudents.close();
             ObjectInputStream isCourses = new ObjectInputStream(new FileInputStream(fileNameCourses));
-            ListaKursow = (List<Course>) isCourses.readObject();
+            listOfCourses = (List<Course>) isCourses.readObject();
             isCourses.close();
         } catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(null, "Nie znaleziono pliku.");
@@ -450,14 +434,12 @@ public class Records {
         }
     }
 
-
     public static void main(String[] args) throws Exception {
+        Records newRecord = new Records();
 
-        Records nowyzapis = new Records();
-
-        /**
-         * Możliwość wyboru rodzaju otwieranej aplikacji.
-         * Użytkownik może korzystać z poprzedniej wersji lub z nowej z GUI.
+        /*
+          Możliwość wyboru rodzaju otwieranej aplikacji.
+          Użytkownik może korzystać z poprzedniej wersji lub z nowej z GUI.
          */
         int selectedOption = JOptionPane.showConfirmDialog(null,
                 "Wybierz wersję aplikacji: \nVERSION 2.0 - GUI SWING - Yes.\nVERSION 1.0 - JFC - No.",
@@ -466,7 +448,7 @@ public class Records {
         if (selectedOption == JOptionPane.NO_OPTION) {
             while (true) {
                 System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-                System.out.println(nowyzapis);
+                System.out.println(newRecord);
                 String menu = "M E N U\n" +
                         "1 - Wczytaj MiniEdukację\n" +
                         "2 - Zapisz/nadpisz bieżącą MiniEdukację\n" +
@@ -482,52 +464,52 @@ public class Records {
                         "12 - Wyswietl Kursy ze Studentami\n" +
                         "13 - Wyswietl Studentow z Kursami\n" +
                         "0 - Zakoncz program";
-                switch (ReadData.getIntJFC(menu)) {
+                switch (ReadData.GetIntJFC(menu)) {
                     case 1:
-                        nowyzapis.WczytajMiniEdukacje();
+                        newRecord.ReadMiniEducation();
                         break;
                     case 2:
-                        nowyzapis.ZapiszMiniEdukacje();
+                        newRecord.SaveMiniEducation();
                         break;
                     case 3:
-                        nowyzapis.Dodaj_Studenta();
+                        newRecord.AddStudent();
                         break;
                     case 4:
-                        nowyzapis.Usun_Studenta();
+                        newRecord.RemoveStudent();
                         break;
                     case 5:
-                        nowyzapis.WyswietlStudentow();
+                        newRecord.ShowStudents();
                         break;
                     case 6:
-                        nowyzapis.Sortuj_Studentow_Po_Stazu();
+                        newRecord.SortStudentsByInternship();
                         break;
                     case 7:
-                        nowyzapis.Dodaj_Kurs();
+                        newRecord.AddCourse();
                         break;
                     case 8:
-                        nowyzapis.Usun_Kurs();
+                        newRecord.RemoveCourse();
                         break;
                     case 9:
-                        nowyzapis.WyswietlKursy();
+                        newRecord.ShowCourses();
                         break;
                     case 10:
-                        nowyzapis.Sortuj_Kursy_Po_ECTS();
+                        newRecord.SortCoursesByECTS();
                         break;
                     case 11:
-                        nowyzapis.Dodaj_Przyporzadkowanie();
+                        newRecord.AddAssignment();
                         break;
                     case 12:
-                        nowyzapis.Wyswietl_Kursy_Ze_Studentami();
+                        newRecord.ShowCoursesWithStudents();
                         break;
                     case 13:
-                        nowyzapis.Wyswietl_Studentow_Z_Kursami();
+                        newRecord.ShowStudentsWithCourses();
                         break;
                     case 0:
                         System.exit(0);
                 }
             }
         } else if (selectedOption == JOptionPane.YES_OPTION) {
-            MainFrame mainFrame = new MainFrame(nowyzapis);
+            MainFrame mainFrame = new MainFrame(newRecord);
             mainFrame.setVisible(true);
         } else if (selectedOption == JOptionPane.CANCEL_OPTION) {
             System.exit(0);

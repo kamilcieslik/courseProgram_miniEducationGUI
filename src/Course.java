@@ -1,89 +1,68 @@
-/**
- * Created by mrfarinq on 25.06.17.
+/*
+  Created by mrfarinq on 25.06.17.
  */
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Course implements Comparable<Course>, Serializable{
-
+public class Course implements Comparable<Course>, Serializable {
     private static final long serialVersionUID = -7963279805278185119L;
-    private String Nazwa;
-    private int ECTS;
+    private String name;
+    private int ects;
 
-    private List<Student> ListaStudentowKursu = new ArrayList<Student>();
+    private List<Student> listOfCourseStudents = new ArrayList<>();
 
-
-    Course(){
-        _setNazwa(ReadData.getNameJFC("Podaj nazwe kursu: "));
-        _setECTS(ReadData.getIntEctsJFC("Jaka wage punktow ECTS ma miec ten kurs? (1-10)"));
+    Course(String name) {
+        this.name = name;
+        _setEcts(ReadData.GetIntEctsJFC("Jaka wage punktow ects ma miec ten kurs? (1-10)"));
     }
 
-    Course(String nazwa){
-        Nazwa=nazwa;
-        _setECTS(ReadData.getIntEctsJFC("Jaka wage punktow ECTS ma miec ten kurs? (1-10)"));
-    }
-    Course(String name, int _ECTS){
-        Nazwa=name;
-        ECTS=_ECTS;
+    Course(String name, int _ects) {
+        this.name = name;
+        ects = _ects;
     }
 
-    public String getNazwa() {
-        return Nazwa;
+    String getName() {
+        return name;
     }
 
-    private void _setNazwa(String nazwa) {
-        Nazwa=nazwa;
+    int GetEcts() {
+        return ects;
     }
 
-    public int getECTS() {
-        return ECTS;
+    private void _setEcts(int _ects) {
+        ects = _ects;
     }
 
-    private void _setECTS(int eCTS) {
-        ECTS = eCTS;
-    }
-
-    public void wprowadzDane(){
-        _setNazwa(ReadData.getNameJFC("Podaj nazwe kursu: "));
-        _setECTS(ReadData.getIntEctsJFC("Jaka wage punktow ECTS ma miec ten kurs? (1-10)"));
-    }
-
-    public String toString(){
-        return (Nazwa+", ECTS: "+ECTS);
+    public String toString() {
+        return (name + ", ects: " + ects);
     }
 
     @Override
     public int compareTo(Course o) {
-        int porownaneNazwy = Nazwa.compareTo(o.getNazwa());
-        return porownaneNazwy;
+        return name.compareTo(o.getName());
     }
 
-    public List<Student> getListaStudentowKursu() {
-        return ListaStudentowKursu;
+    List<Student> getListOfCourseStudents() {
+        return listOfCourseStudents;
     }
 
-    public void setListaStudentowKursu(List<Student> listaStudentowKursu) {
-        ListaStudentowKursu = listaStudentowKursu;
+    void AddStudent(Student student) {
+        listOfCourseStudents.add(student);
     }
 
-    public void DodajStudenta(Student student){
-        ListaStudentowKursu.add(student);
+    void RemoveStudent(Student student) {
+        listOfCourseStudents.remove(student);
     }
 
-    public void UsunStudenta(Student student){
-        ListaStudentowKursu.remove(student);
-    }
-
-    public String WyswietlListeStudentowKursu(){
-        String tmp="";
-        if (ListaStudentowKursu.size()!=0){
-            for(Student a : ListaStudentowKursu) {
-                tmp += "- "+a.toString()+"\n";
+    String ShowListOfCourseStudents() {
+        StringBuilder tmp = new StringBuilder();
+        if (listOfCourseStudents.size() != 0) {
+            for (Student a : listOfCourseStudents) {
+                tmp.append("- ").append(a.toString()).append("\n");
             }
-        }
-        else tmp="- na kurs nie zostal wpisany jeszcze zaden student.\n";
-        return tmp;
+        } else tmp = new StringBuilder("- na kurs nie zostal wpisany jeszcze zaden student.\n");
+        return tmp.toString();
     }
-
 }
